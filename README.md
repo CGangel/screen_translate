@@ -1,21 +1,81 @@
 # 屏幕实时翻译
 
-Android app for automatic screen translation.
+一个 Android 屏幕翻译应用。启动服务后，应用通过用户授权的屏幕捕获会话截取当前屏幕，使用本地 OCR 识别文字，再通过 OpenAI 兼容 API 或本地机翻将文字翻译并显示在悬浮窗上。
 
-The app keeps a user-approved MediaProjection session while translation is
-running. Realtime mode detects screen text changes automatically. Click mode
-shows a floating translate button and translates the current screen on demand.
-Both modes use local ML Kit OCR and call an OpenAI-compatible
-`/v1/chat/completions` API.
+## 功能
 
-Required runtime permissions:
+- 实时翻译：定时截图，检测文字变化后自动翻译。
+- 点击翻译：显示圆形“译”悬浮按钮，点击后翻译当前屏幕。
+- 原语言配置：可选择自动识别、英文、日文、中文、韩文等。
+- 目标语言配置：内置常用选项，也支持自由输入。
+- OpenAI 兼容 API：使用 `/v1/chat/completions`，API 地址和模型由用户填写。
+- 本地机翻：基于 ML Kit 翻译模型，支持查看、下载、卸载预置语言包。
+- 通知栏关闭：翻译服务运行时可从通知栏直接停止。
 
-- Floating window permission
-- Screen capture permission when starting translation
-- Notification permission on Android 13+
+## 构建
 
-## Build
+在项目目录执行：
+
+```powershell
+cd D:\Android\apps\screen_translate
+.\gradlew.bat assembleRelease
+```
+
+生成的 APK：
+
+```text
+app\build\outputs\apk\release\app-release.apk
+```
+
+也可以构建调试包：
 
 ```powershell
 .\gradlew.bat assembleDebug
 ```
+
+## 使用说明
+
+1. 安装 APK 并打开应用。
+2. 选择翻译引擎：
+   - `OpenAI 兼容 API`：填写 API 地址、模型、可选 API Key。
+   - `本地机翻`：先在语言包区域下载需要的语言包，例如“英译中”或“日译中”。
+3. 设置原语言和目标语言。例如日文页面建议设置：
+   - 原语言：`日本語`
+   - 目标语言：`简体中文`
+4. 选择翻译模式：
+   - `实时翻译`：自动识别屏幕文字变化并翻译。
+   - `点击翻译`：点击悬浮“译”按钮后翻译一次。
+5. 点击“开始翻译”，按提示授予悬浮窗权限和屏幕捕获权限。
+6. 停止翻译时，可回到 App 点击停止，或在通知栏点击“关闭翻译”。
+
+## API 地址规则
+
+- 输入 `https://example.com` 时，请求地址会自动变为：
+
+```text
+https://example.com/v1/chat/completions
+```
+
+- 输入 `https://example.com/v1` 时，不会重复追加 `/v1`。
+- API Key 留空时不会发送 `Authorization` 请求头。
+- API Key 非空时会发送：
+
+```text
+Authorization: Bearer <key>
+```
+
+## 权限
+
+应用运行翻译服务需要：
+
+- 悬浮窗权限：显示译文和“译”按钮。
+- 屏幕捕获权限：启动翻译时由系统弹窗授权。
+- 通知权限：Android 13 及以上用于显示前台服务通知。
+- 网络权限：调用 OpenAI 兼容 API 和下载本地机翻模型。
+
+## 注意事项
+
+- 应用不会录屏，也不会保存视频；服务运行期间会保持一次屏幕捕获会话，并按需截取单帧。
+- 部分受保护页面或 `FLAG_SECURE` 页面无法被系统截屏。
+- 本地机翻语言包依赖 ML Kit 动态模型下载，部分没有 Google 服务的设备可能无法下载。
+- 横屏和竖屏切换后，应用会自动重建捕获尺寸以保持译文位置对应。
