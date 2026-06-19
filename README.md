@@ -12,26 +12,7 @@
 - 本地机翻：基于 ML Kit 翻译模型，支持查看、下载、卸载预置语言包。
 - 通知栏关闭：翻译服务运行时可从通知栏直接停止。
 
-## 构建
 
-在项目目录执行：
-
-```powershell
-cd D:\Android\apps\screen_translate
-.\gradlew.bat assembleRelease
-```
-
-生成的 APK：
-
-```text
-app\build\outputs\apk\release\app-release.apk
-```
-
-也可以构建调试包：
-
-```powershell
-.\gradlew.bat assembleDebug
-```
 
 ## 使用说明
 
@@ -56,7 +37,6 @@ app\build\outputs\apk\release\app-release.apk
 https://example.com/v1/chat/completions
 ```
 
-- 输入 `https://example.com/v1` 时，不会重复追加 `/v1`。
 - API Key 留空时不会发送 `Authorization` 请求头。
 - API Key 非空时会发送：
 
@@ -78,4 +58,3 @@ Authorization: Bearer <key>
 - 应用不会录屏，也不会保存视频；服务运行期间会保持一次屏幕捕获会话，并按需截取单帧。
 - 部分受保护页面或 `FLAG_SECURE` 页面无法被系统截屏。
 - 本地机翻语言包依赖 ML Kit 动态模型下载，部分没有 Google 服务的设备可能无法下载。
-- 横屏和竖屏切换后，应用会自动重建捕获尺寸以保持译文位置对应。
