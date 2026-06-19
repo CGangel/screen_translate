@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">&#23631;&#24149;&#23454;&#26102;&#32763;&#35793;</string>
+    <string name="app_subtitle">&#36873;&#25321;&#32763;&#35793;&#24341;&#25806;&#12289;&#30446;&#26631;&#35821;&#35328;&#21644;&#27169;&#24335;</string>
+    <string name="default_target_language">&#31616;&#20307;&#20013;&#25991;</string>
+
+    <string name="label_translation_engine">&#32763;&#35793;&#24341;&#25806;</string>
+    <string name="engine_api">OpenAI &#20860;&#23481; API</string>
+    <string name="engine_local">&#26412;&#22320;&#26426;&#32763;</string>
+    <string name="label_api_base">API &#22320;&#22336;</string>
+    <string name="hint_api_base">https://example.com &#25110; https://example.com/v1</string>
+    <string name="label_model">&#27169;&#22411;</string>
+    <string name="hint_required">&#24517;&#22635;</string>
+    <string name="label_api_key">API Key</string>
+    <string name="hint_optional">&#21487;&#36873;</string>
+    <string name="label_source_language">&#21407;&#35821;&#35328;</string>
+    <string name="hint_source_language">&#36873;&#25321;&#25110;&#36755;&#20837;&#21407;&#35821;&#35328;</string>
+    <string name="label_target_language">&#30446;&#26631;&#35821;&#35328;</string>
+    <string name="hint_target_language">&#36873;&#25321;&#25110;&#36755;&#20837;&#30446;&#26631;&#35821;&#35328;</string>
+    <string name="label_translation_mode">&#32763;&#35793;&#27169;&#24335;</string>
+    <string name="mode_realtime">&#23454;&#26102;&#32763;&#35793;</string>
+    <string name="mode_click">&#28857;&#20987;&#32763;&#35793;</string>
+    <string name="button_save_settings">&#20445;&#23384;&#37197;&#32622;</string>
+    <string name="button_grant_overlay">&#25480;&#20104;&#24748;&#28014;&#31383;&#26435;&#38480;</string>
+    <string name="button_start_translation">&#24320;&#22987;&#32763;&#35793;</string>
+    <string name="button_stop_translation">&#20572;&#27490;&#32763;&#35793;</string>
+    <string name="label_model_packs">&#26412;&#22320;&#26426;&#32763;&#35821;&#35328;&#21253;</string>
+    <string name="hint_model_packs">&#39044;&#32622;&#33521;&#35793;&#20013;&#21644;&#26085;&#35793;&#20013;&#65292;&#21487;&#25163;&#21160;&#26597;&#30475;&#12289;&#19979;&#36733;&#12289;&#21368;&#36733;&#12290;</string>
+    <string name="button_refresh_model_packs">&#21047;&#26032;&#35821;&#35328;&#21253;&#29366;&#24577;</string>
+    <string name="button_download_model_pack">&#19979;&#36733;</string>
+    <string name="button_delete_model_pack">&#21368;&#36733;</string>
+
+    <string name="status_settings_saved">&#37197;&#32622;&#24050;&#20445;&#23384;</string>
+    <string name="status_translation_starting">&#32763;&#35793;&#26381;&#21153;&#27491;&#22312;&#21551;&#21160;</string>
+    <string name="status_screen_capture_denied">&#26410;&#25480;&#20104;&#23631;&#24149;&#25429;&#33719;&#26435;&#38480;</string>
+    <string name="status_api_base_required">&#35831;&#22635;&#20889; API &#22320;&#22336;</string>
+    <string name="status_model_required">&#35831;&#22635;&#20889;&#27169;&#22411;</string>
+    <string name="status_target_language_required">&#35831;&#22635;&#20889;&#30446;&#26631;&#35821;&#35328;</string>
+    <string name="status_source_language_unsupported">&#26242;&#19981;&#25903;&#25345;&#35813;&#21407;&#35821;&#35328;</string>
+    <string name="status_local_target_unsupported">&#26412;&#22320;&#26426;&#32763;&#26242;&#19981;&#25903;&#25345;&#35813;&#30446;&#26631;&#35821;&#35328;</string>
+    <string name="status_model_pack_busy">&#35821;&#35328;&#21253;&#22788;&#29702;&#20013;&#8230;</string>
+    <string name="status_model_pack_downloaded">&#35821;&#35328;&#21253;&#24050;&#19979;&#36733;</string>
+    <string name="status_model_pack_deleted">&#35821;&#35328;&#21253;&#24050;&#21368;&#36733;</string>
+    <string name="status_model_pack_failed">&#35821;&#35328;&#21253;&#25805;&#20316;&#22833;&#36133;&#65306;%1$s</string>
+    <string name="status_model_pack_line">%1$s&#65306;%2$s</string>
+    <string name="status_model_pack_ready">&#24050;&#19979;&#36733;</string>
+    <string name="status_model_pack_missing">&#26410;&#19979;&#36733;</string>
+    <string name="pack_en_zh">&#33521;&#35793;&#20013;</string>
+    <string name="pack_ja_zh">&#26085;&#35793;&#20013;</string>
+    <string name="status_overlay_required">&#38656;&#35201;&#24748;&#28014;&#31383;&#26435;&#38480;</string>
+    <string name="status_projection_unavailable">&#24403;&#21069;&#35774;&#22791;&#19981;&#25903;&#25345;&#23631;&#24149;&#25429;&#33719;</string>
+    <string name="status_translation_stopped">&#32763;&#35793;&#26381;&#21153;&#24050;&#20572;&#27490;</string>
+    <string name="status_request_url">&#35831;&#27714;&#22320;&#22336;&#65306;%1$s</string>
+    <string name="status_local_engine_selected">&#26412;&#22320;&#26426;&#32763;&#19981;&#20351;&#29992; API &#22320;&#22336;</string>
+    <string name="permission_status">&#24748;&#28014;&#31383;&#65306;%1$s\n&#23631;&#24149;&#25429;&#33719;&#65306;&#28857;&#20987;&#24320;&#22987;&#21518;&#25480;&#26435;</string>
+    <string name="permission_granted">&#24050;&#25480;&#26435;</string>
+    <string name="permission_missing">&#26410;&#25480;&#26435;</string>
+
+    <string name="overlay_button_translate">&#35793;</string>
+    <string name="service_capture_permission_missing">&#32570;&#23569;&#23631;&#24149;&#25429;&#33719;&#26435;&#38480;</string>
+    <string name="service_realtime_started">&#23454;&#26102;&#32763;&#35793;&#24050;&#21551;&#21160;</string>
+    <string name="service_unable_to_start">&#26080;&#27861;&#21551;&#21160;&#23631;&#24149;&#25429;&#33719;</string>
+    <string name="service_screen_capture_stopped">&#23631;&#24149;&#25429;&#33719;&#24050;&#20572;&#27490;</string>
+    <string name="service_no_frame">&#26242;&#26102;&#27809;&#26377;&#33719;&#21462;&#21040;&#23631;&#24149;&#30011;&#38754;</string>
+    <string name="service_capture_blocked">&#24403;&#21069;&#23631;&#24149;&#26080;&#27861;&#25429;&#33719;</string>
+    <string name="service_no_text">&#26410;&#35782;&#21035;&#21040;&#25991;&#26412;</string>
+    <string name="service_missing_api_config">&#35831;&#20808;&#22635;&#20889; API &#22320;&#22336;&#21644;&#27169;&#22411;</string>
+    <string name="service_translating">&#27491;&#22312;&#32763;&#35793;&#8230;</string>
+    <string name="service_local_model_notice">&#26412;&#22320;&#27169;&#22411;&#20934;&#22791;&#20013;&#65292;&#39318;&#27425;&#20351;&#29992;&#21487;&#33021;&#38656;&#35201;&#19979;&#36733;</string>
+    <string name="service_processing">&#27491;&#22312;&#22788;&#29702;&#19978;&#19968;&#24352;&#25130;&#22270;</string>
+    <string name="service_no_translated_lines">&#27809;&#26377;&#21487;&#26174;&#31034;&#30340;&#35793;&#25991;</string>
+    <string name="notification_realtime_text">&#23631;&#24149;&#32763;&#35793;&#27491;&#22312;&#36816;&#34892;</string>
+    <string name="notification_click_text">&#28857;&#20987;&#24748;&#28014;&#25353;&#38062;&#21518;&#32763;&#35793;&#24403;&#21069;&#23631;&#24149;</string>
+    <string name="notification_stop_action">&#20851;&#38381;&#32763;&#35793;</string>
+
+    <string-array name="target_language_options">
+        <item>&#31616;&#20307;&#20013;&#25991;</item>
+        <item>&#32321;&#39636;&#20013;&#25991;</item>
+        <item>English</item>
+        <item>&#26085;&#26412;&#35486;</item>
+        <item>&#54620;&#44397;&#50612;</item>
+        <item>Fran&#231;ais</item>
+        <item>Deutsch</item>
+        <item>Espa&#241;ol</item>
+        <item>Portugu&#234;s</item>
+        <item>&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;</item>
+    </string-array>
+
+    <string-array name="source_language_options">
+        <item>&#33258;&#21160;&#35782;&#21035;</item>
+        <item>English</item>
+        <item>&#26085;&#26412;&#35486;</item>
+        <item>&#31616;&#20307;&#20013;&#25991;</item>
+        <item>&#32321;&#39636;&#20013;&#25991;</item>
+        <item>&#54620;&#44397;&#50612;</item>
+    </string-array>
+
+    <string-array name="translation_mode_options">
+        <item>&#23454;&#26102;&#32763;&#35793;</item>
+        <item>&#28857;&#20987;&#32763;&#35793;</item>
+    </string-array>
+
+    <string-array name="translation_engine_options">
+        <item>OpenAI &#20860;&#23481; API</item>
+        <item>&#26412;&#22320;&#26426;&#32763;</item>
+    </string-array>
+</resources>

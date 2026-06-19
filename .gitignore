@@ -1,0 +1,16 @@
+# Gradle / Android build output
+.gradle/
+**/build/
+
+# Local SDK paths and signing secrets
+local.properties
+signing.properties
+release/
+*.jks
+*.keystore
+
+# IDE and local workspace state
+.idea/
+*.iml
+/.arts/
+/.codeartsdoer/
