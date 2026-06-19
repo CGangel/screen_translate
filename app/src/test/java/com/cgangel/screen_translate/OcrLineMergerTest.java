@@ -45,4 +45,34 @@ public class OcrLineMergerTest {
         assertEquals(1, merged.size());
         assertEquals("Settings", merged.get(0).text);
     }
+    @Test
+    public void mergeNearbyLinesCombinesDialogueBlockAndResetsIds() {
+        List<OcrLine> blocks = OcrLineMerger.mergeNearbyLines(Arrays.asList(
+                new OcrLine("line_1", "Hello", 10, 20, 120, 45),
+                new OcrLine("line_2", "world", 12, 50, 130, 75),
+                new OcrLine("line_3", "Separate", 10, 140, 150, 165)
+        ));
+
+        assertEquals(2, blocks.size());
+        assertEquals("line_1", blocks.get(0).id);
+        assertEquals("Hello\nworld", blocks.get(0).text);
+        assertEquals(10, blocks.get(0).left);
+        assertEquals(20, blocks.get(0).top);
+        assertEquals(130, blocks.get(0).right);
+        assertEquals(75, blocks.get(0).bottom);
+        assertEquals("line_2", blocks.get(1).id);
+        assertEquals("Separate", blocks.get(1).text);
+    }
+
+    @Test
+    public void mergeNearbyLinesKeepsDistantLinesSeparate() {
+        List<OcrLine> blocks = OcrLineMerger.mergeNearbyLines(Arrays.asList(
+                new OcrLine("line_1", "Top", 10, 20, 120, 45),
+                new OcrLine("line_2", "Bottom", 12, 100, 130, 125)
+        ));
+
+        assertEquals(2, blocks.size());
+        assertEquals("Top", blocks.get(0).text);
+        assertEquals("Bottom", blocks.get(1).text);
+    }
 }

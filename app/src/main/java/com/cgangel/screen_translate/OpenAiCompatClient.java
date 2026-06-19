@@ -78,8 +78,8 @@ public class OpenAiCompatClient {
         JSONObject system = new JSONObject();
         system.put("role", "system");
         system.put("content", strictRetry
-                ? "Return only valid JSON. Do not use markdown. Translate each line exactly once."
-                : "You translate OCR text lines from a phone screen. Return only JSON.");
+                ? "Return only valid JSON. Do not use markdown. Translate each text item exactly once."
+                : "You translate OCR text items from a phone screen. Return only JSON.");
         messages.put(system);
 
         JSONArray lineItems = new JSONArray();
@@ -97,12 +97,12 @@ public class OpenAiCompatClient {
         user.put("content",
                 "Source language: " + SourceLanguage.promptLabel(settings.sourceLanguage) + "\n"
                         + "Target language: " + settings.targetLanguage + "\n"
-                        + "Translate every line from the source language to the target language. "
-                        + "If source language is Auto-detect, infer it from each line. "
-                        + "Preserve ids. "
+                        + "Translate every text item from the source language to the target language. "
+                        + "If source language is Auto-detect, infer it from each item. "
+                        + "Preserve ids. Preserve line breaks inside each text item when useful for readability. "
                         + "Return JSON in this exact shape: "
                         + "{\"translations\":[{\"id\":\"line_1\",\"translation\":\"...\"}]}.\n"
-                        + "Lines JSON: " + lineItems);
+                        + "Text items JSON: " + lineItems);
         messages.put(user);
         return messages;
     }

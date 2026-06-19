@@ -182,6 +182,7 @@ public class OverlayWindow {
         textView.setTextColor(Color.rgb(17, 24, 39));
         textView.setTextSize(textSizeForLine(line));
         textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
+        textView.setSingleLine(false);
         textView.setIncludeFontPadding(false);
         textView.setPadding(dp(3), 0, dp(3), 0);
         textView.setMinHeight(Math.max(dp(16), line.height()));
@@ -240,7 +241,8 @@ public class OverlayWindow {
 
     private float textSizeForLine(OcrLine line) {
         float scaledDensity = context.getResources().getDisplayMetrics().scaledDensity;
-        int lineHeight = Math.max(dp(14), line.height());
+        int sourceLineCount = Math.max(1, line.text.split("\\R", -1).length);
+        int lineHeight = Math.max(dp(14), line.height() / sourceLineCount);
         float px = Math.max(dp(10), Math.min(dp(22), lineHeight * 0.82f));
         return px / scaledDensity;
     }

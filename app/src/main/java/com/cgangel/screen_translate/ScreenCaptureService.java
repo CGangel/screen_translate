@@ -374,6 +374,7 @@ public class ScreenCaptureService extends Service {
 
             List<OcrLine> lines = recognizeLines(bitmap, settings.sourceLanguage);
             lines = filterOverlayLines(lines, bitmap.getWidth(), bitmap.getHeight());
+            lines = OcrLineMerger.mergeNearbyLines(lines);
             bitmap.recycle();
             bitmap = null;
             if (lines.isEmpty()) {

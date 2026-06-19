@@ -32,13 +32,46 @@ public final class OcrLineMerger {
                 .thenComparingInt(line -> line.top)
                 .thenComparingInt(line -> line.left));
 
-        List<OcrLine> withIds = new ArrayList<>();
-        for (int i = 0; i < merged.size(); i++) {
-            withIds.add(merged.get(i).withId("line_" + (i + 1)));
-        }
-        return withIds;
+        return assignIds(merged);
     }
 
+    public static List<OcrLine> mergeNearbyLines(List<OcrLine> lines) {
+        List<OcrLine> blocks = new ArrayList<>();
+        if (lines == null || lines.isEmpty()) {
+            return blocks;
+        }
+
+        List<OcrLine> sorted = new ArrayList<>();
+        for (OcrLine line : lines) {
+            if (line != null && line.hasText()) {
+                sorted.add(line);
+            }
+        }
+        sorted.sort(Comparator
+                .comparingInt((OcrLine line) -> line.top)
+                .thenComparingInt(line -> line.left));
+
+        TextBlockBuilder current = null;
+        for (OcrLine line : sorted) {
+            if (current == null || !current.canAppend(line)) {
+                if (current != null) {
+                    blocks.add(current.build());
+                }
+                current = new TextBlockBuilder(line);
+            } else {
+                current.append(line);
+            }
+        }
+        if (current != null) {
+            blocks.add(current.build());
+        }
+
+        blocks.sort(Comparator
+                .comparingInt((OcrLine line) -> line.top / Math.max(1, line.height() + 8))
+                .thenComparingInt(line -> line.top)
+                .thenComparingInt(line -> line.left));
+        return assignIds(blocks);
+    }
     private static int findDuplicateIndex(List<OcrLine> lines, OcrLine candidate) {
         String candidateText = TextHash.normalizeText(candidate.text);
         for (int i = 0; i < lines.size(); i++) {
@@ -123,5 +156,66 @@ public final class OcrLineMerger {
             offset += Character.charCount(codePoint);
         }
         return count;
+    }
+    private static List<OcrLine> assignIds(List<OcrLine> lines) {
+        List<OcrLine> withIds = new ArrayList<>();
+        for (int i = 0; i < lines.size(); i++) {
+            withIds.add(lines.get(i).withId("line_" + (i + 1)));
+        }
+        return withIds;
+    }
+
+    private static class TextBlockBuilder {
+        private final StringBuilder text = new StringBuilder();
+        private int left;
+        private int top;
+        private int right;
+        private int bottom;
+        private int lineCount;
+        private int totalHeight;
+
+        TextBlockBuilder(OcrLine first) {
+            left = first.left;
+            top = first.top;
+            right = first.right;
+            bottom = first.bottom;
+            text.append(first.text);
+            lineCount = 1;
+            totalHeight = Math.max(1, first.height());
+        }
+
+        boolean canAppend(OcrLine line) {
+            int averageHeight = Math.max(1, totalHeight / Math.max(1, lineCount));
+            int lineHeight = Math.max(1, line.height());
+            int gap = line.top - bottom;
+            if (gap < -Math.max(4, averageHeight / 3)) {
+                return false;
+            }
+            int maxGap = Math.max(8, Math.max(averageHeight, lineHeight));
+            if (gap > maxGap) {
+                return false;
+            }
+
+            int overlap = Math.max(0, Math.min(right, line.right) - Math.max(left, line.left));
+            int minWidth = Math.max(1, Math.min(right - left, line.width()));
+            double overlapRatio = (double) overlap / (double) minWidth;
+            int leftDelta = Math.abs(line.left - left);
+            int allowedLeftDelta = Math.max(Math.max(averageHeight, lineHeight) * 2, (right - left) / 3);
+            return overlapRatio >= 0.35 || leftDelta <= allowedLeftDelta;
+        }
+
+        void append(OcrLine line) {
+            text.append('\n').append(line.text);
+            left = Math.min(left, line.left);
+            top = Math.min(top, line.top);
+            right = Math.max(right, line.right);
+            bottom = Math.max(bottom, line.bottom);
+            lineCount++;
+            totalHeight += Math.max(1, line.height());
+        }
+
+        OcrLine build() {
+            return new OcrLine("", text.toString(), left, top, right, bottom);
+        }
     }
 }
