@@ -258,5 +258,17 @@
             android:layout_marginTop="14dp"
             android:textColor="#2563EB"
             android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/openSourceNoticeText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:autoLink="web"
+            android:linksClickable="true"
+            android:text="@string/open_source_notice"
+            android:textColor="#4B5563"
+            android:textColorLink="#2563EB"
+            android:textSize="13sp" />
     </LinearLayout>
 </ScrollView>

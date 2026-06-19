@@ -72,6 +72,7 @@
     <string name="notification_realtime_text">&#23631;&#24149;&#32763;&#35793;&#27491;&#22312;&#36816;&#34892;</string>
     <string name="notification_click_text">&#28857;&#20987;&#24748;&#28014;&#25353;&#38062;&#21518;&#32763;&#35793;&#24403;&#21069;&#23631;&#24149;</string>
     <string name="notification_stop_action">&#20851;&#38381;&#32763;&#35793;</string>
+    <string name="open_source_notice">&#24320;&#28304;&#22320;&#22336;&#65306;https://github.com/CGangel/screen_translate\n&#26412;&#36719;&#20214;&#24320;&#28304;&#20813;&#36153;&#65292;&#31105;&#27490;&#20498;&#21334;&#12290;</string>
 
     <string-array name="target_language_options">
         <item>&#31616;&#20307;&#20013;&#25991;</item>
