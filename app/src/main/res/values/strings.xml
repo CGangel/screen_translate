@@ -20,6 +20,9 @@
     <string name="label_translation_mode">&#32763;&#35793;&#27169;&#24335;</string>
     <string name="mode_realtime">&#23454;&#26102;&#32763;&#35793;</string>
     <string name="mode_click">&#28857;&#20987;&#32763;&#35793;</string>
+    <string name="label_text_layout_mode">&#25991;&#26412;&#21512;&#24182;&#26041;&#24335;</string>
+    <string name="mode_single_line">&#21333;&#34892;&#32763;&#35793;</string>
+    <string name="mode_multi_line">&#22810;&#34892;&#32763;&#35793;</string>
     <string name="button_save_settings">&#20445;&#23384;&#37197;&#32622;</string>
     <string name="button_grant_overlay">&#25480;&#20104;&#24748;&#28014;&#31383;&#26435;&#38480;</string>
     <string name="button_start_translation">&#24320;&#22987;&#32763;&#35793;</string>
@@ -102,6 +105,11 @@
     <string-array name="translation_mode_options">
         <item>&#23454;&#26102;&#32763;&#35793;</item>
         <item>&#28857;&#20987;&#32763;&#35793;</item>
+    </string-array>
+
+    <string-array name="text_layout_mode_options">
+        <item>&#21333;&#34892;&#32763;&#35793;</item>
+        <item>&#22810;&#34892;&#32763;&#35793;</item>
     </string-array>
 
     <string-array name="translation_engine_options">

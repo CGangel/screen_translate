@@ -138,6 +138,34 @@ public class TextHashAndCacheTest {
     }
 
     @Test
+    public void textLayoutModeDefaultsToMultiLineAndAffectsCacheKey() {
+        ApiSettings defaults = new ApiSettings(
+                "https://example.com",
+                "model-a",
+                "",
+                "\u7b80\u4f53\u4e2d\u6587"
+        );
+        ApiSettings singleLine = new ApiSettings(
+                "https://example.com",
+                "model-a",
+                "",
+                SourceLanguage.AUTO_LABEL,
+                "\u7b80\u4f53\u4e2d\u6587",
+                TranslationMode.REALTIME,
+                TranslationEngine.API,
+                TextLayoutMode.SINGLE_LINE
+        );
+
+        assertEquals(TextLayoutMode.MULTI_LINE, defaults.textLayoutMode);
+        assertEquals(TextLayoutMode.SINGLE_LINE, singleLine.textLayoutMode);
+        assertEquals(TextLayoutMode.MULTI_LINE, TextLayoutMode.normalize("unknown"));
+        assertNotEquals(
+                TranslationCache.key(defaults, "hash"),
+                TranslationCache.key(singleLine, "hash")
+        );
+    }
+
+    @Test
     public void localTranslationCanStartWithoutApiConfig() {
         ApiSettings local = new ApiSettings(
                 "",

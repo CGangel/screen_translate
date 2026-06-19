@@ -23,6 +23,7 @@ public class AppConfig {
     private static final String KEY_TARGET_LANGUAGE = "target_language";
     private static final String KEY_TRANSLATION_MODE = "translation_mode";
     private static final String KEY_TRANSLATION_ENGINE = "translation_engine";
+    private static final String KEY_TEXT_LAYOUT_MODE = "text_layout_mode";
     private static final String KEY_API_KEY_ENCRYPTED = "api_key_encrypted";
     private static final String KEYSTORE_ALIAS = "screen_translate_api_key";
     private static final String ANDROID_KEYSTORE = "AndroidKeyStore";
@@ -43,7 +44,8 @@ public class AppConfig {
                 prefs.getString(KEY_SOURCE_LANGUAGE, SourceLanguage.AUTO_LABEL),
                 prefs.getString(KEY_TARGET_LANGUAGE, "\u7b80\u4f53\u4e2d\u6587"),
                 prefs.getString(KEY_TRANSLATION_MODE, TranslationMode.REALTIME),
-                prefs.getString(KEY_TRANSLATION_ENGINE, TranslationEngine.API)
+                prefs.getString(KEY_TRANSLATION_ENGINE, TranslationEngine.API),
+                prefs.getString(KEY_TEXT_LAYOUT_MODE, TextLayoutMode.MULTI_LINE)
         );
     }
 
@@ -54,7 +56,8 @@ public class AppConfig {
                 .putString(KEY_SOURCE_LANGUAGE, settings.sourceLanguage)
                 .putString(KEY_TARGET_LANGUAGE, settings.targetLanguage)
                 .putString(KEY_TRANSLATION_MODE, settings.translationMode)
-                .putString(KEY_TRANSLATION_ENGINE, settings.translationEngine);
+                .putString(KEY_TRANSLATION_ENGINE, settings.translationEngine)
+                .putString(KEY_TEXT_LAYOUT_MODE, settings.textLayoutMode);
         if (settings.apiKey.isEmpty()) {
             editor.remove(KEY_API_KEY_ENCRYPTED);
         } else {

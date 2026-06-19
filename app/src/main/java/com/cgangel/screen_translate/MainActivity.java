@@ -35,6 +35,7 @@ public class MainActivity extends Activity {
     private AutoCompleteTextView targetLanguageInput;
     private Spinner translationEngineSpinner;
     private Spinner translationModeSpinner;
+    private Spinner textLayoutModeSpinner;
     private TextView normalizedUrlText;
     private TextView permissionStatusText;
     private TextView statusText;
@@ -109,6 +110,7 @@ public class MainActivity extends Activity {
         targetLanguageInput = findViewById(R.id.targetLanguageInput);
         translationEngineSpinner = findViewById(R.id.translationEngineSpinner);
         translationModeSpinner = findViewById(R.id.translationModeSpinner);
+        textLayoutModeSpinner = findViewById(R.id.textLayoutModeSpinner);
         normalizedUrlText = findViewById(R.id.normalizedUrlText);
         permissionStatusText = findViewById(R.id.permissionStatusText);
         statusText = findViewById(R.id.statusText);
@@ -128,6 +130,7 @@ public class MainActivity extends Activity {
         setupTargetLanguageInput();
         setupTranslationEngineSpinner();
         setupTranslationModeSpinner();
+        setupTextLayoutModeSpinner();
         ApiSettings settings = appConfig.load();
         apiBaseInput.setText(settings.apiBaseUrl);
         modelInput.setText(settings.model);
@@ -136,6 +139,7 @@ public class MainActivity extends Activity {
         targetLanguageInput.setText(settings.targetLanguage);
         translationEngineSpinner.setSelection(TranslationEngine.isLocal(settings.translationEngine) ? 1 : 0);
         translationModeSpinner.setSelection(TranslationMode.isClick(settings.translationMode) ? 1 : 0);
+        textLayoutModeSpinner.setSelection(TextLayoutMode.isMultiLine(settings.textLayoutMode) ? 1 : 0);
         updateApiInputsForEngine();
     }
 
@@ -219,7 +223,10 @@ public class MainActivity extends Activity {
                         : TranslationMode.REALTIME,
                 translationEngineSpinner.getSelectedItemPosition() == 1
                         ? TranslationEngine.LOCAL
-                        : TranslationEngine.API
+                        : TranslationEngine.API,
+                textLayoutModeSpinner.getSelectedItemPosition() == 1
+                        ? TextLayoutMode.MULTI_LINE
+                        : TextLayoutMode.SINGLE_LINE
         );
     }
 
@@ -468,6 +475,16 @@ public class MainActivity extends Activity {
         );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         translationModeSpinner.setAdapter(adapter);
+    }
+
+    private void setupTextLayoutModeSpinner() {
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                this,
+                R.array.text_layout_mode_options,
+                android.R.layout.simple_spinner_item
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        textLayoutModeSpinner.setAdapter(adapter);
     }
 
     private void setupTranslationEngineSpinner() {

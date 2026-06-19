@@ -374,7 +374,9 @@ public class ScreenCaptureService extends Service {
 
             List<OcrLine> lines = recognizeLines(bitmap, settings.sourceLanguage);
             lines = filterOverlayLines(lines, bitmap.getWidth(), bitmap.getHeight());
-            lines = OcrLineMerger.mergeNearbyLines(lines);
+            if (TextLayoutMode.isMultiLine(settings.textLayoutMode)) {
+                lines = OcrLineMerger.mergeNearbyLines(lines);
+            }
             bitmap.recycle();
             bitmap = null;
             if (lines.isEmpty()) {
@@ -585,7 +587,9 @@ public class ScreenCaptureService extends Service {
                 + "\n"
                 + settings.sourceLanguage
                 + "\n"
-                + settings.targetLanguage;
+                + settings.targetLanguage
+                + "\n"
+                + settings.textLayoutMode;
     }
 
     private boolean isMostlyBlack(Bitmap bitmap) {

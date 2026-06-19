@@ -39,6 +39,8 @@ public class TranslationCache {
                 + "\n"
                 + settings.targetLanguage
                 + "\n"
+                + settings.textLayoutMode
+                + "\n"
                 + textHash);
     }
 }

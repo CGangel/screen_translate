@@ -9,6 +9,7 @@ public class ApiSettings {
     public final String targetLanguage;
     public final String translationMode;
     public final String translationEngine;
+    public final String textLayoutMode;
 
     public ApiSettings(String apiBaseUrl, String model, String apiKey, String targetLanguage) {
         this(apiBaseUrl, model, apiKey, targetLanguage, TranslationMode.REALTIME);
@@ -21,7 +22,15 @@ public class ApiSettings {
             String targetLanguage,
             String translationMode
     ) {
-        this(apiBaseUrl, model, apiKey, SourceLanguage.AUTO_LABEL, targetLanguage, translationMode, TranslationEngine.API);
+        this(
+                apiBaseUrl,
+                model,
+                apiKey,
+                SourceLanguage.AUTO_LABEL,
+                targetLanguage,
+                translationMode,
+                TranslationEngine.API
+        );
     }
 
     public ApiSettings(
@@ -33,6 +42,28 @@ public class ApiSettings {
             String translationMode,
             String translationEngine
     ) {
+        this(
+                apiBaseUrl,
+                model,
+                apiKey,
+                sourceLanguage,
+                targetLanguage,
+                translationMode,
+                translationEngine,
+                TextLayoutMode.MULTI_LINE
+        );
+    }
+
+    public ApiSettings(
+            String apiBaseUrl,
+            String model,
+            String apiKey,
+            String sourceLanguage,
+            String targetLanguage,
+            String translationMode,
+            String translationEngine,
+            String textLayoutMode
+    ) {
         this.apiBaseUrl = safe(apiBaseUrl);
         this.normalizedBaseUrl = ApiUrlNormalizer.normalize(this.apiBaseUrl);
         this.model = safe(model);
@@ -43,6 +74,7 @@ public class ApiSettings {
                 : safe(targetLanguage);
         this.translationMode = TranslationMode.normalize(translationMode);
         this.translationEngine = TranslationEngine.normalize(translationEngine);
+        this.textLayoutMode = TextLayoutMode.normalize(textLayoutMode);
     }
 
     public boolean canTranslate() {
