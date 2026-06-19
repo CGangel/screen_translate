@@ -26,6 +26,7 @@ import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -41,8 +42,8 @@ public class ScreenCaptureService extends Service {
     private static final String CHANNEL_ID = "screen_translate_capture";
     private static final int NOTIFICATION_ID = 24;
     private static final long CAPTURE_INTERVAL_MS = 1000;
-    private static final long FIRST_CAPTURE_DELAY_MS = 250;
     private static final long OVERLAY_HIDE_SETTLE_MS = 70;
+    private static final int MAX_CAPTURE_LONG_EDGE = 1600;
     private static final int MAX_OCR_LONG_EDGE = 1600;
     private static volatile boolean running;
 
@@ -63,6 +64,7 @@ public class ScreenCaptureService extends Service {
     private ImageReader imageReader;
     private OverlayWindow overlayWindow;
     private FloatingTranslateWindow floatingTranslateWindow;
+    private FloatingTranslateWindow floatingOriginalWindow;
     private OcrProcessor ocrProcessor;
     private OpenAiCompatClient openAiClient;
     private LocalMlKitTranslator localTranslator;
@@ -77,6 +79,7 @@ public class ScreenCaptureService extends Service {
     private String lastSettingsFingerprint = "";
     private String translationMode = TranslationMode.REALTIME;
     private volatile boolean forceTranslateCurrentCapture;
+    private volatile boolean realtimeTranslationActive;
     private boolean stopping;
 
     private final Runnable captureRunnable = this::startCaptureWork;
@@ -90,6 +93,12 @@ public class ScreenCaptureService extends Service {
         super.onCreate();
         overlayWindow = new OverlayWindow(this);
         floatingTranslateWindow = new FloatingTranslateWindow(this);
+        floatingOriginalWindow = new FloatingTranslateWindow(
+                this,
+                R.string.overlay_button_original,
+                OverlayStyle.ORIGINAL_BUTTON_COLOR,
+                286
+        );
         ocrProcessor = new OcrProcessor();
         openAiClient = new OpenAiCompatClient();
         localTranslator = new LocalMlKitTranslator();
@@ -121,8 +130,10 @@ public class ScreenCaptureService extends Service {
                 if (TranslationMode.isClick(translationMode)) {
                     floatingTranslateWindow.show(v -> requestManualCapture());
                 } else {
-                    overlayWindow.showStatus(getString(R.string.service_realtime_started));
-                    scheduleNextCapture(FIRST_CAPTURE_DELAY_MS);
+                    realtimeTranslationActive = false;
+                    floatingTranslateWindow.show(v -> startRealtimeTranslation());
+                    floatingOriginalWindow.show(v -> pauseRealtimeTranslation());
+                    overlayWindow.showStatus(getString(R.string.service_realtime_waiting));
                 }
             } else {
                 overlayWindow.showStatus(getString(R.string.service_unable_to_start));
@@ -149,6 +160,9 @@ public class ScreenCaptureService extends Service {
         if (floatingTranslateWindow != null) {
             floatingTranslateWindow.dismiss();
         }
+        if (floatingOriginalWindow != null) {
+            floatingOriginalWindow.dismiss();
+        }
         if (ocrProcessor != null) {
             ocrProcessor.close();
         }
@@ -163,7 +177,8 @@ public class ScreenCaptureService extends Service {
         if (!running
                 || mediaProjection == null
                 || stopping
-                || TranslationMode.isClick(translationMode)) {
+                || TranslationMode.isClick(translationMode)
+                || !realtimeTranslationActive) {
             return;
         }
         mainHandler.removeCallbacks(captureRunnable);
@@ -183,6 +198,10 @@ public class ScreenCaptureService extends Service {
     }
 
     private void startCaptureWork() {
+        if (!TranslationMode.isClick(translationMode) && !realtimeTranslationActive) {
+            processing.set(false);
+            return;
+        }
         if (!processing.compareAndSet(false, true)) {
             scheduleNextCapture(CAPTURE_INTERVAL_MS);
             return;
@@ -198,6 +217,35 @@ public class ScreenCaptureService extends Service {
                 () -> worker.execute(this::captureOcrAndTranslate),
                 OVERLAY_HIDE_SETTLE_MS
         );
+    }
+
+    private void startRealtimeTranslation() {
+        if (!running || mediaProjection == null || stopping || TranslationMode.isClick(translationMode)) {
+            return;
+        }
+        realtimeTranslationActive = true;
+        forceTranslateCurrentCapture = true;
+        showTransientStatus(getString(R.string.service_realtime_started));
+        if (processing.get()) {
+            showProgressStatus(getString(R.string.service_processing));
+            return;
+        }
+        startCaptureWork();
+    }
+
+    private void pauseRealtimeTranslation() {
+        if (TranslationMode.isClick(translationMode)) {
+            return;
+        }
+        realtimeTranslationActive = false;
+        forceTranslateCurrentCapture = false;
+        mainHandler.removeCallbacks(captureRunnable);
+        lastTextHash = "";
+        mainHandler.post(() -> {
+            if (overlayWindow != null) {
+                overlayWindow.clear();
+            }
+        });
     }
 
     private boolean setupProjection(int resultCode, Intent resultData) {
@@ -243,6 +291,9 @@ public class ScreenCaptureService extends Service {
                     mainHandler
             );
             return true;
+        } catch (OutOfMemoryError e) {
+            System.gc();
+            return false;
         } catch (Exception e) {
             return false;
         }
@@ -289,6 +340,9 @@ public class ScreenCaptureService extends Service {
             lastFrameHash = "";
             lastTextHash = "";
             return true;
+        } catch (OutOfMemoryError e) {
+            System.gc();
+            return false;
         } catch (Exception e) {
             return false;
         }
@@ -298,21 +352,25 @@ public class ScreenCaptureService extends Service {
         screenDensity = getResources().getConfiguration().densityDpi;
         WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics metrics = new DisplayMetrics();
+        int realWidth = 1;
+        int realHeight = 1;
         if (windowManager != null && windowManager.getDefaultDisplay() != null) {
             windowManager.getDefaultDisplay().getRealMetrics(metrics);
-            captureWidth = metrics.widthPixels;
-            captureHeight = metrics.heightPixels;
+            realWidth = metrics.widthPixels;
+            realHeight = metrics.heightPixels;
         }
-        captureWidth = Math.max(1, captureWidth);
-        captureHeight = Math.max(1, captureHeight);
+        CaptureSize captureSize = CaptureSize.fitWithin(realWidth, realHeight, MAX_CAPTURE_LONG_EDGE);
+        captureWidth = captureSize.width;
+        captureHeight = captureSize.height;
     }
 
     private void captureOcrAndTranslate() {
         boolean forceTranslate = forceTranslateCurrentCapture;
         forceTranslateCurrentCapture = false;
         boolean frameAcquired = false;
+        Bitmap bitmap = null;
         try {
-            Bitmap bitmap = acquireBitmap();
+            bitmap = acquireBitmap();
             frameAcquired = true;
             restoreOverlay();
             if (bitmap == null) {
@@ -353,6 +411,7 @@ public class ScreenCaptureService extends Service {
             List<OcrLine> lines = recognizeLines(bitmap, settings.sourceLanguage);
             lines = filterOverlayLines(lines, bitmap.getWidth(), bitmap.getHeight());
             bitmap.recycle();
+            bitmap = null;
             if (lines.isEmpty()) {
                 lastTextHash = "";
                 showProgressStatus(getString(R.string.service_no_text));
@@ -375,6 +434,9 @@ public class ScreenCaptureService extends Service {
             String cacheKey = TranslationCache.key(settings, textHash);
             List<TranslationResult> cached = translationCache.get(cacheKey);
             if (cached != null) {
+                if (!shouldShowCaptureResult()) {
+                    return;
+                }
                 showTranslations(lines, cached);
                 return;
             }
@@ -388,23 +450,25 @@ public class ScreenCaptureService extends Service {
                 translated = openAiClient.translate(settings, lines);
             }
             translationCache.put(cacheKey, translated);
+            if (!shouldShowCaptureResult()) {
+                return;
+            }
             showTranslations(lines, translated);
+        } catch (OutOfMemoryError e) {
+            System.gc();
+            showTransientStatus(shortError(e));
         } catch (Exception e) {
             showTransientStatus(shortError(e));
         } finally {
+            if (bitmap != null && !bitmap.isRecycled()) {
+                bitmap.recycle();
+            }
             if (!frameAcquired) {
                 restoreOverlay();
             }
             processing.set(false);
-            if (TranslationMode.isClick(translationMode)) {
-                mainHandler.post(() -> {
-                    if (floatingTranslateWindow != null) {
-                        floatingTranslateWindow.restore();
-                    }
-                });
-            } else {
-                scheduleNextCapture(CAPTURE_INTERVAL_MS);
-            }
+            restoreFloatingButtons();
+            scheduleNextCapture(CAPTURE_INTERVAL_MS);
         }
     }
 
@@ -441,6 +505,9 @@ public class ScreenCaptureService extends Service {
             Bitmap cropped = Bitmap.createBitmap(padded, 0, 0, image.getWidth(), image.getHeight());
             padded.recycle();
             return cropped;
+        } catch (OutOfMemoryError e) {
+            System.gc();
+            return null;
         } catch (Exception e) {
             return null;
         } finally {
@@ -474,19 +541,35 @@ public class ScreenCaptureService extends Service {
         return lines;
     }
 
+    private boolean shouldShowCaptureResult() {
+        return TranslationMode.isClick(translationMode) || realtimeTranslationActive;
+    }
+
     private List<OcrLine> filterOverlayLines(List<OcrLine> lines, int sourceWidth, int sourceHeight) {
-        if (lines == null || lines.isEmpty()
-                || !TranslationMode.isClick(translationMode)
-                || floatingTranslateWindow == null) {
+        if (lines == null || lines.isEmpty()) {
             return lines;
         }
-        OcrLine exclusion = floatingTranslateWindow.captureExclusionLine(sourceWidth, sourceHeight);
-        if (exclusion == null || exclusion.area() <= 0) {
+        ArrayList<OcrLine> exclusions = new ArrayList<>();
+        if (floatingTranslateWindow != null) {
+            OcrLine translateExclusion =
+                    floatingTranslateWindow.captureExclusionLine(sourceWidth, sourceHeight);
+            if (translateExclusion != null && translateExclusion.area() > 0) {
+                exclusions.add(translateExclusion);
+            }
+        }
+        if (floatingOriginalWindow != null && !TranslationMode.isClick(translationMode)) {
+            OcrLine originalExclusion =
+                    floatingOriginalWindow.captureExclusionLine(sourceWidth, sourceHeight);
+            if (originalExclusion != null && originalExclusion.area() > 0) {
+                exclusions.add(originalExclusion);
+            }
+        }
+        if (exclusions.isEmpty()) {
             return lines;
         }
         return OcrLineFilter.excludeOverlayLines(
                 lines,
-                exclusion,
+                exclusions,
                 getString(R.string.overlay_button_translate)
         );
     }
@@ -553,10 +636,21 @@ public class ScreenCaptureService extends Service {
             if (overlayWindow != null) {
                 overlayWindow.restore();
             }
-            if (floatingTranslateWindow != null && TranslationMode.isClick(translationMode)) {
-                floatingTranslateWindow.restore();
-            }
+            restoreFloatingButtonsOnMainThread();
         });
+    }
+
+    private void restoreFloatingButtons() {
+        mainHandler.post(this::restoreFloatingButtonsOnMainThread);
+    }
+
+    private void restoreFloatingButtonsOnMainThread() {
+        if (floatingTranslateWindow != null) {
+            floatingTranslateWindow.restore();
+        }
+        if (floatingOriginalWindow != null && !TranslationMode.isClick(translationMode)) {
+            floatingOriginalWindow.restore();
+        }
     }
 
     private void hideOverlaysForCapture() {
@@ -564,8 +658,11 @@ public class ScreenCaptureService extends Service {
             if (overlayWindow != null) {
                 overlayWindow.hideForCapture();
             }
-            if (floatingTranslateWindow != null && TranslationMode.isClick(translationMode)) {
+            if (floatingTranslateWindow != null) {
                 floatingTranslateWindow.hideForCapture();
+            }
+            if (floatingOriginalWindow != null && !TranslationMode.isClick(translationMode)) {
+                floatingOriginalWindow.hideForCapture();
             }
         });
     }
@@ -654,10 +751,10 @@ public class ScreenCaptureService extends Service {
         manager.createNotificationChannel(channel);
     }
 
-    private String shortError(Exception e) {
-        String message = e.getMessage();
+    private String shortError(Throwable throwable) {
+        String message = throwable.getMessage();
         if (message == null || message.trim().isEmpty()) {
-            message = e.getClass().getSimpleName();
+            message = throwable.getClass().getSimpleName();
         }
         if (message.length() > 180) {
             return message.substring(0, 180) + "...";

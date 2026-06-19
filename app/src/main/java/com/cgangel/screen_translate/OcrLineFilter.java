@@ -12,7 +12,20 @@ public final class OcrLineFilter {
             OcrLine exclusion,
             String buttonText
     ) {
-        if (lines == null || lines.isEmpty() || exclusion == null || exclusion.area() <= 0) {
+        if (exclusion == null) {
+            return lines;
+        }
+        List<OcrLine> exclusions = new ArrayList<>();
+        exclusions.add(exclusion);
+        return excludeOverlayLines(lines, exclusions, buttonText);
+    }
+
+    public static List<OcrLine> excludeOverlayLines(
+            List<OcrLine> lines,
+            List<OcrLine> exclusions,
+            String buttonText
+    ) {
+        if (lines == null || lines.isEmpty() || exclusions == null || exclusions.isEmpty()) {
             return lines;
         }
         List<OcrLine> filtered = new ArrayList<>();
@@ -20,12 +33,30 @@ public final class OcrLineFilter {
             if (line == null) {
                 continue;
             }
-            if (isInsideOverlayExclusion(line, exclusion, buttonText)) {
+            if (isInsideAnyOverlayExclusion(line, exclusions, buttonText)) {
                 continue;
             }
             filtered.add(line);
         }
         return filtered;
+    }
+
+    private static boolean isInsideAnyOverlayExclusion(
+            OcrLine line,
+            List<OcrLine> exclusions,
+            String buttonText
+    ) {
+        if (exclusions == null || exclusions.isEmpty()) {
+            return false;
+        }
+        for (OcrLine exclusion : exclusions) {
+            if (exclusion != null
+                    && exclusion.area() > 0
+                    && isInsideOverlayExclusion(line, exclusion, buttonText)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static boolean isInsideOverlayExclusion(

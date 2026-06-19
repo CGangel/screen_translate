@@ -5,6 +5,7 @@ import android.graphics.drawable.GradientDrawable;
 
 public final class OverlayStyle {
     public static final int FLOATING_BUTTON_COLOR = Color.rgb(56, 189, 248);
+    public static final int ORIGINAL_BUTTON_COLOR = Color.rgb(34, 197, 94);
     public static final int TRANSLATION_BUBBLE_COLOR = Color.rgb(255, 173, 205);
     public static final int STATUS_BUBBLE_COLOR = Color.argb(230, 17, 24, 39);
 

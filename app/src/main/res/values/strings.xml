@@ -57,8 +57,11 @@
     <string name="permission_missing">&#26410;&#25480;&#26435;</string>
 
     <string name="overlay_button_translate">&#35793;</string>
+    <string name="overlay_button_original">&#21407;</string>
     <string name="service_capture_permission_missing">&#32570;&#23569;&#23631;&#24149;&#25429;&#33719;&#26435;&#38480;</string>
     <string name="service_realtime_started">&#23454;&#26102;&#32763;&#35793;&#24050;&#21551;&#21160;</string>
+    <string name="service_realtime_waiting">&#28857;&#20987;&#24748;&#28014;&#31383;&#8220;&#35793;&#8221;&#24320;&#21551;&#23454;&#26102;&#32763;&#35793;</string>
+    <string name="service_realtime_paused">&#24050;&#26242;&#20572;&#23454;&#26102;&#32763;&#35793;&#65292;&#24182;&#28165;&#31354;&#35793;&#25991;</string>
     <string name="service_unable_to_start">&#26080;&#27861;&#21551;&#21160;&#23631;&#24149;&#25429;&#33719;</string>
     <string name="service_screen_capture_stopped">&#23631;&#24149;&#25429;&#33719;&#24050;&#20572;&#27490;</string>
     <string name="service_no_frame">&#26242;&#26102;&#27809;&#26377;&#33719;&#21462;&#21040;&#23631;&#24149;&#30011;&#38754;</string>

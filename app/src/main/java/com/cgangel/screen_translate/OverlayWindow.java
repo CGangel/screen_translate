@@ -59,6 +59,12 @@ public class OverlayWindow {
         return hasTranslations;
     }
 
+    public void clear() {
+        clearTranslations();
+        removeStatusView();
+        hasTranslations = false;
+    }
+
     public void showTranslations(
             List<OcrLine> lines,
             List<TranslationResult> translations,

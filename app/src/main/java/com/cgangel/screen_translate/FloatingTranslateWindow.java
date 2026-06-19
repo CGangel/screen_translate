@@ -12,13 +12,23 @@ import android.widget.TextView;
 public class FloatingTranslateWindow {
     private final Context context;
     private final WindowManager windowManager;
+    private final int textResId;
+    private final int backgroundColor;
+    private final int yDp;
     private TextView buttonView;
     private WindowManager.LayoutParams lastParams;
     private boolean attached;
 
     public FloatingTranslateWindow(Context context) {
+        this(context, R.string.overlay_button_translate, OverlayStyle.FLOATING_BUTTON_COLOR, 220);
+    }
+
+    public FloatingTranslateWindow(Context context, int textResId, int backgroundColor, int yDp) {
         this.context = context.getApplicationContext();
         this.windowManager = (WindowManager) this.context.getSystemService(Context.WINDOW_SERVICE);
+        this.textResId = textResId;
+        this.backgroundColor = backgroundColor;
+        this.yDp = yDp;
     }
 
     public void show(View.OnClickListener listener) {
@@ -28,11 +38,11 @@ public class FloatingTranslateWindow {
             return;
         }
         buttonView = new TextView(context);
-        buttonView.setText(R.string.overlay_button_translate);
+        buttonView.setText(textResId);
         buttonView.setTextColor(android.graphics.Color.WHITE);
         buttonView.setTextSize(22);
         buttonView.setGravity(Gravity.CENTER);
-        buttonView.setBackground(OverlayStyle.oval(OverlayStyle.FLOATING_BUTTON_COLOR));
+        buttonView.setBackground(OverlayStyle.oval(backgroundColor));
         buttonView.setOnClickListener(listener);
 
         WindowManager.LayoutParams params = new WindowManager.LayoutParams(
@@ -48,7 +58,7 @@ public class FloatingTranslateWindow {
         );
         params.gravity = Gravity.TOP | Gravity.END;
         params.x = dp(20);
-        params.y = dp(220);
+        params.y = dp(yDp);
         windowManager.addView(buttonView, params);
         lastParams = params;
         attached = true;
